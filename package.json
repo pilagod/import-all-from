@@ -1,6 +1,6 @@
 {
   "name": "import-all-from",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A npm package which helps importing all files from given path",
   "main": "index.js",
   "scripts": {
