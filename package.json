@@ -4,7 +4,7 @@
   "description": "A npm package which helps importing all files from given path",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "cp -f ./utils.js ./test/test-import-all-from/ && ./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",

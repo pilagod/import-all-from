@@ -154,10 +154,10 @@ describe('unit tests', () => {
   describe('getPathFromHereFrom tests', () => {
     const pathFromRoot = './root/path/to/destination'
 
-    it('should replace beginning \'.\' of pathFromRo  ot to \'..\'', () => {
+    it('should replace beginning \'./\' of pathFromRoot to \'../../\'', () => {
       const result = utils.getPathFromHereFrom(pathFromRoot)
 
-      expect(result).to.be.equal('../root/path/to/destination')
+      expect(result).to.be.equal('../../root/path/to/destination')
     })
   })
 
@@ -220,7 +220,7 @@ describe('unit tests', () => {
   describe('importFileTo tests', () => {
     const results = []
     const env = {
-      pathFromHere: 'pathFromHere'
+      pathFromHere: 'pathFromHere/'
     }
     const file = 'file'
 
@@ -277,7 +277,7 @@ describe('unit tests', () => {
 
   describe('isValidFile tests', () => {
     const env = {
-      pathFromRoot: 'pathFromRoot'
+      pathFromRoot: 'pathFromRoot/'
     }
     const file = 'file'
 
