@@ -1,0 +1,29 @@
+{
+  "name": "import-all-from",
+  "version": "0.0.0",
+  "description": "A npm package which helps importing all files from given path",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pilagod/import-all-from.git"
+  },
+  "keywords": [
+    "import",
+    "require",
+    "files"
+  ],
+  "author": "pilagod <hotony801018@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pilagod/import-all-from/issues"
+  },
+  "homepage": "https://github.com/pilagod/import-all-from#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2",
+    "sinon": "^1.17.5"
+  }
+}
