@@ -13,7 +13,7 @@ module.exports = {
    *  import all files from given path
    *
    *  @method importAllFrom
-   *  @param {String} pathFromRoot Path from root to destination
+   *  @param {String} path Absolute path from system root to destination directory
    *  @param {Object} options Settings for import criteria (regexp, file, dir)
    *  @return {Array} An array containing all imported files
    */

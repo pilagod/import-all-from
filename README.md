@@ -48,7 +48,7 @@ importAllFrom(path, {
 
 ### (1) Writing Tests
 
-This util makes an easy way to manage structure of test files, you can thus manage each function test with separate file
+This util makes an easy way to manage structure of test files, you can thus handle each function test with separate file.
 
 ``` js
 describe('unit tests', () => {
@@ -70,7 +70,6 @@ describe('unit-test2', ...)
 Perhaps you might have some state handlers / checkers which have same return data format, for better management, you can separate each condition with different modules with this util.
 
 ``` js
-
 let state
 
 const checkers = importAllFrom(__dirname + '/checkers')
