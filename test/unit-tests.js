@@ -18,7 +18,7 @@ describe('unit tests', () => {
   })
 
   describe('importAllFrom tests', () => {
-    const pathFromRoot = 'pathFromRoot'
+    const path = 'path'
     const options = {}
     // stub results
     const files = {}
@@ -29,31 +29,31 @@ describe('unit tests', () => {
         .withArgs(fileReducer).returns('resultFromReduce')
 
       sandbox.stub(utils, 'getFilesFrom')
-        .withArgs(pathFromRoot).returns(files)
+        .withArgs(path).returns(files)
       sandbox.stub(utils, 'createFileReducer')
-        .withArgs(pathFromRoot, options).returns(fileReducer)
+        .withArgs(path, options).returns(fileReducer)
     })
 
     it('should call getFilesFrom with given pathFromRoot', () => {
-      utils.importAllFrom(pathFromRoot, options)
+      utils.importAllFrom(path, options)
 
       expect(
         utils.getFilesFrom
-          .calledWithExactly(pathFromRoot)
+          .calledWithExactly(path)
       ).to.be.true
     })
 
     it('should call createFileReducer with pathFromRoot and options', () => {
-      utils.importAllFrom(pathFromRoot, options)
+      utils.importAllFrom(path, options)
 
       expect(
         utils.createFileReducer
-          .calledWithExactly(pathFromRoot, options)
+          .calledWithExactly(path, options)
       ).to.be.true
     })
 
     it('should call reduce of result from getFilesFrom, with result from createFileReducer and empty array', () => {
-      utils.importAllFrom(pathFromRoot, options)
+      utils.importAllFrom(path, options)
 
       expect(
         files.reduce
@@ -62,54 +62,51 @@ describe('unit tests', () => {
     })
 
     it('should return result from reduce of files', () => {
-      const result = utils.importAllFrom(pathFromRoot, options)
+      const result = utils.importAllFrom(path, options)
 
       expect(result).to.be.equal('resultFromReduce')
     })
   })
 
   describe('getFilesFrom tests', () => {
-    const pathFromRoot = 'pathFromRoot'
+    const path = 'path'
 
     beforeEach(() => {
       sandbox.stub(utils, 'fs', {
         readdirSync: sandbox.stub()
-          .withArgs(pathFromRoot).returns('resultFromReaddirSync')
+          .withArgs(path).returns('resultFromReaddirSync')
       })
     })
 
     it('should call readdirSync of fs with given pathFromRoot', () => {
-      utils.getFilesFrom(pathFromRoot)
+      utils.getFilesFrom(path)
 
       expect(
         utils.fs.readdirSync
-          .calledWithExactly(pathFromRoot)
+          .calledWithExactly(path)
       ).to.be.true
     })
 
     it('should return result from readdirSync of fs', () => {
-      const result = utils.getFilesFrom(pathFromRoot)
+      const result = utils.getFilesFrom(path)
 
       expect(result).to.be.equal('resultFromReaddirSync')
     })
   })
 
   describe('createFileReducer tests', () => {
-    const pathFromRoot = 'pathFromRoot'
+    const path = 'path'
     const options = {}
     // stub results
     const concatOptions = {}
-    const pathFromHere = 'pathFromHere'
 
     beforeEach(() => {
       sandbox.stub(utils, 'concatDefaultOptions')
         .returns(concatOptions)
-      sandbox.stub(utils, 'getPathFromHereFrom')
-        .returns(pathFromHere)
     })
 
     it('should call concatDefaultOptions with options', () => {
-      utils.createFileReducer(pathFromRoot, options)
+      utils.createFileReducer(path, options)
 
       expect(
         utils.concatDefaultOptions
@@ -117,26 +114,16 @@ describe('unit tests', () => {
       ).to.be.true
     })
 
-    it('should call getPathFromHereFrom with given pathFromRoot', () => {
-      utils.createFileReducer(pathFromRoot, options)
-
-      expect(
-        utils.getPathFromHereFrom
-          .calledWithExactly(pathFromRoot)
-      ).to.be.true
-    })
-
     it('should return a function which will call fileReducer with an object containing pathFromRoot, pathFromHere and options, and arguments passed to it', () => {
       sandbox.stub(utils, 'fileReducer')
         .returns('resultFromfileReducer')
 
-      const fileReducer = utils.createFileReducer(pathFromRoot, options)
+      const fileReducer = utils.createFileReducer(path, options)
 
       expect(fileReducer).to.be.instanceof(Function)
 
       const env = {
-        pathFromRoot,
-        pathFromHere,
+        path,
         options: concatOptions
       }
       const args = ['arg1', 'arg2', 'arg3']
@@ -148,16 +135,6 @@ describe('unit tests', () => {
           .calledWithExactly(env, ...args)
       ).to.be.true
       expect(result).to.be.equal('resultFromfileReducer')
-    })
-  })
-
-  describe('getPathFromHereFrom tests', () => {
-    const pathFromRoot = './root/path/to/destination'
-
-    it('should replace beginning \'./\' of pathFromRoot to \'../../\'', () => {
-      const result = utils.getPathFromHereFrom(pathFromRoot)
-
-      expect(result).to.be.equal('../../root/path/to/destination')
     })
   })
 
@@ -218,30 +195,46 @@ describe('unit tests', () => {
   })
 
   describe('importFileTo tests', () => {
-    const results = []
     const env = {
-      pathFromHere: 'pathFromHere/'
+      path: 'path',
+      options: {}
     }
     const file = 'file'
+    // stub results
+    const filePath = 'filePath'
+
+    let results
 
     beforeEach(() => {
+      results = []
+
       sandbox.stub(utils, 'isValidFile')
+      sandbox.stub(utils, 'getFilePath')
+        .returns(filePath)
+      sandbox.stub(utils, 'require')
+        .returns('resultFromRequire')
     })
 
-    it('should call isValidFile with env and file', () => {
+    it('should call getFilePath with env.path and file', () => {
+      utils.importFileTo(results, {env, file})
+
+      expect(
+        utils.getFilePath
+          .calledWithExactly(env.path, file)
+      ).to.be.true
+    })
+
+    it('should call isValidFile with env.options and filePath from getFilePath', () => {
       utils.importFileTo(results, {env, file})
 
       expect(
         utils.isValidFile
-          .calledWithExactly(env, file)
+          .calledWithExactly(env.options, filePath)
       ).to.be.true
     })
 
-    it('should call require with env.pathFromHere concated with file given isValidFile returns true', () => {
-      const filePath = 'pathFromHere/file'
-
+    it('should call require with filePath from getFilePath given isValidFile returns true', () => {
       utils.isValidFile.returns(true)
-      sandbox.stub(utils, 'require')
 
       utils.importFileTo(results, {env, file})
 
@@ -251,55 +244,45 @@ describe('unit tests', () => {
       ).to.be.true
     })
 
-    it('should call push of results with result from require given isValidFile returns true', () => {
+    it('should add result from require to results given isValidFile returns true', () => {
       utils.isValidFile.returns(true)
-      sandbox.stub(results, 'push')
-      sandbox.stub(utils, 'require').returns('resultFromRequire')
 
       utils.importFileTo(results, {env, file})
 
-      expect(
-        results.push
-          .calledWithExactly('resultFromRequire')
-      ).to.be.true
+      expect(results).to.be.eql(['resultFromRequire'])
     })
 
-    it('should not manipulate results given isValidFile returns false', () => {
-      const resultStub = [...results]
-
+    it('should not manipulate results and not call require given isValidFile returns false', () => {
       utils.isValidFile.returns(false)
 
       utils.importFileTo(results, {env, file})
 
-      expect(results).to.be.eql(resultStub)
+      expect(results).to.be.eql([])
+      expect(utils.require.called).to.be.false
+    })
+  })
+
+  describe('getFilePath tests', () => {
+    const path = 'path'
+    const file = 'file'
+
+    beforeEach(() => {
+      sandbox.stub(utils.pathUtil, 'join')
+        .returns('resultFromJoin')
+    })
+
+    it('should call join of pathUtils with path and file then return', () => {
+      const result = utils.getFilePath(path, file)
+
+      expect(
+        utils.pathUtil.join
+          .calledWithExactly(path, file)
+      ).to.be.true
+      expect(result).to.be.equal('resultFromJoin')
     })
   })
 
   describe('isValidFile tests', () => {
-    const env = {
-      pathFromRoot: 'pathFromRoot/'
-    }
-    const file = 'file'
-
-    beforeEach(() => {
-      sandbox.stub(utils, 'optionsChecker')
-        .returns('resultFromOptionsChecker')
-    })
-
-    it('should call optionsChecker with env.options and env.pathFromRoot concated with file then return', () => {
-      const filePath = `pathFromRoot/file`
-
-      const result = utils.isValidFile(env, file)
-
-      expect(
-        utils.optionsChecker
-          .calledWithExactly(env.options, filePath)
-      ).to.be.true
-      expect(result).to.be.equal('resultFromOptionsChecker')
-    })
-  })
-
-  describe('optionsChecker tests', () => {
     const options = {
       regexp: /test/,
       file: true,
@@ -318,7 +301,7 @@ describe('unit tests', () => {
     })
 
     it('should call statSync of fs with filePath', () => {
-      utils.optionsChecker(options, filePath)
+      utils.isValidFile(options, filePath)
 
       expect(
         utils.fs.statSync
@@ -327,7 +310,7 @@ describe('unit tests', () => {
     })
 
     it('should call fileOptionChecker with options.file and fileStat', () => {
-      utils.optionsChecker(options, filePath)
+      utils.isValidFile(options, filePath)
 
       expect(
         utils.fileOptionChecker
@@ -338,7 +321,7 @@ describe('unit tests', () => {
     it('should call dirOptionChecker with options.dir and fileStat when fileOptionChecker return true', () => {
       utils.fileOptionChecker.returns(true)
 
-      utils.optionsChecker(options, filePath)
+      utils.isValidFile(options, filePath)
 
       expect(
         utils.dirOptionChecker
@@ -350,7 +333,7 @@ describe('unit tests', () => {
       utils.fileOptionChecker.returns(true)
       utils.dirOptionChecker.returns(true)
 
-      utils.optionsChecker(options, filePath)
+      utils.isValidFile(options, filePath)
 
       expect(
         utils.regexpOptionChecker
@@ -364,16 +347,16 @@ describe('unit tests', () => {
       utils.fileOptionChecker.returns(true)
       utils.dirOptionChecker.returns(true)
       utils.regexpOptionChecker.returns(true)
-      results.push(utils.optionsChecker(options, filePath))
+      results.push(utils.isValidFile(options, filePath))
 
       utils.regexpOptionChecker.returns(false)
-      results.push(utils.optionsChecker(options, filePath))
+      results.push(utils.isValidFile(options, filePath))
 
       utils.dirOptionChecker.returns(false)
-      results.push(utils.optionsChecker(options, filePath))
+      results.push(utils.isValidFile(options, filePath))
 
       utils.fileOptionChecker.returns(false)
-      results.push(utils.optionsChecker(options, filePath))
+      results.push(utils.isValidFile(options, filePath))
 
       expect(results).to.be.eql([true, false, false, false])
     })

@@ -1,10 +1,12 @@
 {
   "name": "import-all-from",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A npm package which helps importing all files from given path",
   "main": "index.js",
   "scripts": {
-    "test": "cp -f ./utils.js ./test/test-import-all-from/ && ./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "test-unit": "./node_modules/.bin/mocha ./test/unit-tests.js --reporter spec",
+    "test-integration": "./node_modules/.bin/mocha ./test/integration-tests.js --reporter spec"
   },
   "repository": {
     "type": "git",

@@ -1,7 +1,8 @@
 const fs = require('fs')
+const pathUtil = require('path')
 
 module.exports = {
-  fs, require, // for test (injecting referecnes)
+  fs, pathUtil, require, // for test (injecting referecnes)
 
   defaultOptions: {
     file: true,
@@ -16,30 +17,24 @@ module.exports = {
    *  @param {Object} options Settings for import criteria (regexp, file, dir)
    *  @return {Array} An array containing all imported files
    */
-  importAllFrom(pathFromRoot, options) {
-    const files = this.getFilesFrom(pathFromRoot)
-    const fileReducer = this.createFileReducer(pathFromRoot, options)
+  importAllFrom(path, options) {
+    const files = this.getFilesFrom(path)
+    const fileReducer = this.createFileReducer(path, options)
 
     return files.reduce(fileReducer, [])
   },
 
-  getFilesFrom(pathFromRoot) {
-    return this.fs.readdirSync(pathFromRoot)
+  getFilesFrom(path) {
+    return this.fs.readdirSync(path)
   },
 
-  createFileReducer(pathFromRoot, options) {
-    const pathFromHere = this.getPathFromHereFrom(pathFromRoot)
+  createFileReducer(path, options) {
     const concatedOptions = this.concatDefaultOptions(options)
     const env = {
-      pathFromRoot,
-      pathFromHere,
+      path,
       options: concatedOptions
     }
     return (...args) => this.fileReducer(env, ...args)
-  },
-
-  getPathFromHereFrom(pathFromRoot) {
-    return pathFromRoot.replace(/^\.\//, '../../')
   },
 
   concatDefaultOptions(options) {
@@ -55,18 +50,18 @@ module.exports = {
   },
 
   importFileTo(results, {env, file}) {
-    if (this.isValidFile(env, file)) {
-      results.push(
-        this.require(`${env.pathFromHere}${file}`)
-      )
+    const filePath = this.getFilePath(env.path, file)
+
+    if (this.isValidFile(env.options, filePath)) {
+      results.push(this.require(filePath))
     }
   },
 
-  isValidFile(env, file) {
-    return this.optionsChecker(env.options, `${env.pathFromRoot}${file}`)
+  getFilePath(path, file) {
+    return this.pathUtil.join(path, file)
   },
 
-  optionsChecker(options, filePath) {
+  isValidFile(options, filePath) {
     const fileStat = this.fs.statSync(filePath)
 
     return (
