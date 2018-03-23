@@ -15,6 +15,9 @@ const importAllFrom = require('import-all-from')
 
 // return an array containing all modules right under given directory
 const utils = importAllFrom('/system/absolute/path/to/dest/dir')
+// or 
+// assume __dirname here refers to '/system/absolute/path/to'
+const utils = importAllFrom(__dirname + '/dest/dir')
 
 utils.forEach(() => {
   // do something ...
@@ -27,12 +30,7 @@ for (const util of utils) {
 }
 
 ```
-**NOTE:** Directory path should be an absolute path from system root. For node.js, you can use `___dirname` to get absolute path of the directory where current file is located in.
-
-``` js
-// assume __dirname here refers to '/system/absolute/path/to'
-const modules = importAllFrom(__dirname + '/dest/dir')
-```
+**NOTE:** Directory path should be an absolute path from system root. For node.js, you can use `__dirname` to get absolute path of the directory where current file is located in.
 
 
 ## Options
@@ -40,7 +38,7 @@ const modules = importAllFrom(__dirname + '/dest/dir')
 importAllFrom(path, {
   file: {Boolean}, // false for not importing file modules [default: true]
   dir: {Boolean}, // false for not importing directory modules [default: true]
-  regexp: {RegExp} // importing file/directory modules whose name matching regexp [default: undefined]
+  regexp: {RegExp} // importing file/directory modules whose name matches regexp [default: undefined]
 })
 ```
 
